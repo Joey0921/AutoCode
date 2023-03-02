@@ -1,12 +1,16 @@
 #导入相关库
+import time
 import xlrd
-def auto_md5(num,path):
+
+def autoMD5(num,path):
     data = xlrd.open_workbook(path)
 
     for sn in range(0,num):
         table = data.sheets()[sn]
         rows = table.nrows
 
+        #获取日期
+        dt = time.strftime("%Y/%m/%d",time.localtime())
         #获取文件名称
         fn = path.split('/')[-1:]
 
@@ -15,7 +19,23 @@ def auto_md5(num,path):
 
         #生成相关脚本文件
         #给文件命名
-        txtfn = tablename + '_md5'
+        #判断是否有系统来源
+        #取系统分区字段
+        source = ''
+        sourceid = ''
+        for row in range(1, rows):
+            columns = str(table[row][4])
+            values = str(table[row][5])
+            comment = str(table[row][6])
+
+            # 获取分区字段
+            if comment[6:-1] == "系统分区":
+                sourceid = sourceid + columns[6:-1] + " = \'" + values[6:-1] + "\'"
+                source = source + values[6:-1]
+            else:
+                continue
+
+        txtfn = tablename + '_' +source.lower()
         sqlfile = open(txtfn,'a')
 
         #拼接字段
@@ -62,30 +82,29 @@ def auto_md5(num,path):
         #取分区字段
         partition = ''
         for row in range(1,rows):
-            columns = str(table[row][3])
-            values = str(table[row][4])
-
+            columns = str(table[row][4])
+            values = str(table[row][5])
+            comment = str(table[row][6])
             #获取分区字段
-            if columns != "empty:''":
-                partition =  partition + "," + values[6:-1] + " as " + columns[6:-1] + "\n"
+            if columns != "empty:''" and comment[6:-1] == "系统分区":
+                partition = partition + ",\'" + values[6:-1] + "\' as " + columns[6:-1] + "\n"
+            elif columns != "empty:''":
+                partition = partition + "," + values[6:-1] + " as " + columns[6:-1] + "\n"
             else:
                 continue
 
-        #取系统分区字段
-        sourceid = ''
-        for row in range(1,rows):
-            columns = str(table[row][3])
-            values = str(table[row][4])
-            comment = str(table[row][5])
-
-            #获取分区字段
-            if comment[6:-1] == "系统分区":
-                sourceid =  sourceid + columns[6:-1] + " = " + values[6:-1]
-            else:
-                continue
+        xmldesc1 = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <root>"
+        <tasklist>
+        <task database="udm_idz" author=\"""" + str(table[1][7])[6:-1] + """\" createTime=\"""" + str(dt) + """\" updater=" " updateTime=" ">
+            <sqllist>
+                <sql index="1" registerF1ag="0" tableName="" sinkFlag="0" saveMode="" persistF1ag="0" persistlevel="">
+                    <desc><![CDATA[]]></desc>
+                    <context>
+                    <![CDATA[\n"""
 
         #拼接字段
-        sqlfile.writelines("insert overwrite table udm_idz." + tablename + "_md5 \nselect\n"
+        sqlfile.writelines(xmldesc1 + "insert overwrite table udm_idz." + tablename + "_md5 \nselect\n"
                            + ziduan + "MD5(CONCAT_WS(','\n"
                            + md5zd + ')) AS md5str\n'
                            + addzd
