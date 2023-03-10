@@ -15,7 +15,7 @@ def insertSQL(num,path):
     for row in range(1,rows):
         columns = str(table[row][0])
         comment = str(table[row][1])
-        addflag = str(table[row][2])
+        addflag = str(table[row][3])
 
         #判断是否为新增字段
         if addflag[6:-1] != "是" and row == 1:
@@ -30,7 +30,7 @@ def insertSQL(num,path):
     for row in range(1,rows):
         columns = str(table[row][0])
         comment = str(table[row][1])
-        addflag = str(table[row][2])
+        addflag = str(table[row][3])
 
         #判断是否为新增字段
         if addflag[6:-1] == "是":
@@ -46,7 +46,7 @@ def insertSQL(num,path):
     partition = ''
     countp = 0
     for row in range(1, rows):
-        columns = str(table[row][4])
+        columns = str(table[row][5])
 
         # 获取分区字段
         if columns != "empty:''" :
@@ -63,7 +63,7 @@ def insertSQL(num,path):
     countpk = 0
     for row in range(1, rows):
         columns = str(table[row][0])
-        pkflag = str(table[row][3])
+        pkflag = str(table[row][4])
 
         if pkflag[6:-1] == "是":
             countpk = countpk + 1
