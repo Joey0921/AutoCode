@@ -1,7 +1,7 @@
 import pymysql as pysql
 import auto_incr_md5 as am
-import insertSQL as iq
-import concatColumns as cc
+import insert_sql as iq
+import concat_columns as cc
 
 def mysqlMD5(num,path):
     #连接数据库
@@ -26,8 +26,8 @@ def mysqlMD5(num,path):
     for sn in range(0,num):
         #判断结果
         if result[0] == 0:
-            am.autoMD5(sn,path)
-            turple = iq.insertSQL(sn, path)
+            am.auto_incr_md5(sn,path)
+            turple = iq.insert_sql(sn, path)
             if sn == 0:
                 #插入语句
                 insertsql = "insert into autocoding.autocode_config (num, tablename, original_col, incr_col, primary_key, partition_key, update_time, valid_flag) " \
@@ -55,11 +55,11 @@ def mysqlMD5(num,path):
                 if li != '':
                     cn = cn + 1
             #for sn in range(0,num):
-            newcol = cc.concatColumns(sn,cn+1,path)
+            newcol = cc.concat_columns(sn,cn+1,path)
             if hiscol == newcol:
-                am.autoMD5(sn, path)
+                am.auto_incr_md5(sn, path)
                 updatesql = "update autocoding.autocode_config set valid_flag = 0 where tablename = %s;"
-                turple = iq.insertSQL(sn, path)
+                turple = iq.insert_sql(sn, path)
                 # 插入语句
                 if hiscol != turple[1] + ',' + turple[2] :
                     insertsql = "insert into autocoding.autocode_config (num, tablename, original_col, incr_col, primary_key, partition_key, update_time, valid_flag) " \
@@ -78,9 +78,9 @@ def mysqlMD5(num,path):
                 print("新版本的顺序是：" + newcol)
                 yn = input('是否要进行替换？')
                 if str(yn) == 'y':
-                    am.autoMD5(sn, path)
+                    am.auto_incr_md5(sn, path)
                     updatesql = "update autocoding.autocode_config set valid_flag = 0 where tablename = %s;"
-                    turple = iq.insertSQL(sn, path)
+                    turple = iq.insert_sql(sn, path)
                     # 插入语句
                     if hiscol != turple[1] + ',' + turple[2]:
                         insertsql = "insert into autocoding.autocode_config (num, tablename, original_col, incr_col, primary_key, partition_key, update_time, valid_flag) " \

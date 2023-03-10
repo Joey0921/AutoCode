@@ -1,6 +1,6 @@
 import xlrd
 
-def insertSQL(num,path):
+def insert_sql(num,path):
 
     #获取表名
     fn = path.split('/')[-1:]

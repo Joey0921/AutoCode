@@ -3,7 +3,7 @@ import time
 import xlrd
 import os
 
-def autoMD5(num,path):
+def auto_incr_md5(num,path):
     data = xlrd.open_workbook(path)
 
     #for sn in range(0,num):

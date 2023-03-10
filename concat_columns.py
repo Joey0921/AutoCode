@@ -1,6 +1,6 @@
 import xlrd
 
-def concatColumns(sno,num,path):
+def concat_columns(sno,num,path):
     data = xlrd.open_workbook(path)
 
     table = data.sheets()[sno]

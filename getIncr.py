@@ -1,6 +1,6 @@
 import xlrd
 import pymysql as pysql
-import concatColumns as cc
+import concat_columns as cc
 def getIncr(num,path):
     #打开excel文件
     data = xlrd.open_workbook(path)
