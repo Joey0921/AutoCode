@@ -48,14 +48,15 @@ def mysqlMD5(num,path):
                 hiscol = result1[2] + ',' + result1[3]
             else:
                 hiscol = result1[2]
-            list = hiscol.split(',')
+            hislist = hiscol.split(',')
             #判断长度，排除空字符串
             cn = 0
-            for li in list:
-                if li != '':
+            for his in hislist:
+                if his != '':
                     cn = cn + 1
             #for sn in range(0,num):
             newcol = cc.concat_columns(sn,cn+1,path)
+            newlist = newcol.split(',')
             if hiscol == newcol:
                 am.auto_incr_md5(sn, path)
                 updatesql = "update autocoding.autocode_config set valid_flag = 0 where tablename = %s;"
@@ -73,9 +74,12 @@ def mysqlMD5(num,path):
                                         , turple[4]))
                     db.commit()
             else:
-                print("您的第" + str(sn+1) +"个sheet页的表结构与上一个版本不一致，请检查！")
-                print("旧版本的顺序是：" + hiscol)
-                print("新版本的顺序是：" + newcol)
+                print("您的第" + str(sn + 1) + "个sheet页的表结构与上一个版本不一致，请检查！")
+                for i in range(0,cn):
+                    if hislist[i] != newlist[i]:
+                        print("新版本的第" + str(i) + "个字段个旧版本的不一致：旧版本为 " + hislist[i] + " ,新版本为 " + newlist[i])
+                    else:
+                        continue
                 yn = input('是否要进行替换？')
                 if str(yn) == 'y':
                     am.auto_incr_md5(sn, path)
@@ -97,7 +101,10 @@ def mysqlMD5(num,path):
                         continue
                 else:
                     print("您的第" + str(sn + 1) + "个sheet页的表结构与上一个版本不一致，请检查！")
-                    print("旧版本的顺序是：" + hiscol)
-                    print("新版本的顺序是：" + newcol)
-
+                    for i in range(0, cn):
+                        if hislist[i] != newlist[i]:
+                            print("新版本的第" + str(i) + "个字段个旧版本的不一致：旧版本为 " + hislist[i] + "新版本为 " +
+                                  newlist[i])
+                        else:
+                            continue
     cur.close()
